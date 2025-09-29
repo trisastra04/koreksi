@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Koreksi Soal (PG & PG Kompleks)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .step-card { display: none; }
+        .step-card.active { display: block; }
+        .table-input {
+            text-align: center;
+            border: 1px solid #d1d5db;
+            padding: 0.5rem;
+            width: 80px; /* Adjusted width for multiple characters */
+            border-radius: 0.375rem;
+            transition: all 0.2s;
+        }
+        .table-input:focus {
+            outline: 2px solid transparent;
+            outline-offset: 2px;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 2px #c7d2fe;
+        }
+        .key-input {
+            text-align: center;
+            border: 1px solid #d1d5db;
+            padding: 0.5rem;
+            width: 100%;
+            border-radius: 0.375rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-7xl">
+        <header class="text-center mb-10">
+            <h1 class="text-4xl font-bold text-gray-900">Aplikasi Koreksi Soal</h1>
+            <p class="text-gray-600 mt-2 text-lg">Mendukung Pilihan Ganda Sederhana & Kompleks (MCMA).</p>
+        </header>
+
+        <!-- Step 1: Setup -->
+        <div id="step-1" class="step-card active bg-white p-8 rounded-2xl shadow-lg transition-all duration-500">
+            <h2 class="text-2xl font-semibold mb-2 text-indigo-700">Langkah 1: Pengaturan Ujian</h2>
+            <p class="text-gray-500 mb-6">Masukkan informasi dasar mengenai ujian dan jenis soal.</p>
+            <div class="space-y-6">
+                <fieldset class="border p-4 rounded-lg">
+                    <legend class="px-2 font-semibold text-gray-700">Informasi Laporan</legend>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                        <input type="text" id="mapel" placeholder="Mata Pelajaran (Contoh: Sejarah)" class="w-full p-3 border border-gray-300 rounded-lg">
+                        <input type="text" id="kelas" placeholder="Kelas/Program (Contoh: X-1)" class="w-full p-3 border border-gray-300 rounded-lg">
+                    </div>
+                </fieldset>
+                 <fieldset class="border p-4 rounded-lg">
+                    <legend class="px-2 font-semibold text-gray-700">Detail Soal & Siswa</legend>
+                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                        <input type="number" id="num-students" placeholder="Jumlah Siswa" class="w-full p-3 border border-gray-300 rounded-lg">
+                        <input type="number" id="num-questions" placeholder="Jumlah Soal Pilihan Ganda" class="w-full p-3 border border-gray-300 rounded-lg" oninput="generateAnswerKeyInputs()">
+                        
+                        <!-- UPDATED: Score inputs -->
+                        <div class="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            <input type="number" id="simple-score" class="w-full p-3 border border-gray-300 rounded-lg" placeholder="Skor PG Sederhana (cth: 1)">
+                            <input type="number" id="complex-score" class="w-full p-3 border border-gray-300 rounded-lg" placeholder="Skor PG Kompleks (cth: 5)">
+                        </div>
+                        <div class="md:col-span-2">
+                            <input type="text" id="complex-questions" class="w-full p-3 border border-gray-300 rounded-lg" placeholder="Nomor Soal Kompleks (pisahkan koma, cth: 3,7,11)">
+                        </div>
+                        
+                        <!-- NEW: Answer Key Grid Container -->
+                        <div id="answer-key-container" class="md:col-span-2 hidden mt-4">
+                            <label class="font-semibold text-gray-700 mb-2 block">Input Kunci Jawaban</label>
+                            <div id="answer-key-grid" class="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 gap-x-2 gap-y-4">
+                                <!-- Answer key inputs will be generated here -->
+                            </div>
+                        </div>
+
+                    </div>
+                </fieldset>
+            </div>
+            <button onclick="setupTable()" class="mt-8 w-full bg-indigo-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-indigo-700 transition duration-300 text-lg">Lanjutkan ke Input Jawaban &rarr;</button>
+        </div>
+
+        <!-- Step 2: Input -->
+        <div id="step-2" class="step-card bg-white p-8 rounded-2xl shadow-lg">
+            <h2 class="text-2xl font-semibold mb-2 text-indigo-700">Langkah 2: Input Jawaban Siswa</h2>
+             <p class="text-gray-500 mb-6">Isi nama dan jawaban siswa. Anda bisa <strong class="text-indigo-600">copy-paste dari Excel</strong>.</p>
+            <div id="table-container" class="overflow-x-auto">
+                <table id="input-table" class="min-w-full divide-y divide-gray-200"></table>
+            </div>
+            <div class="flex flex-col md:flex-row gap-4 mt-8">
+                 <button onclick="goToStep(1)" class="w-full md:w-auto bg-gray-200 text-gray-800 font-bold py-3 px-6 rounded-lg hover:bg-gray-300 transition duration-300">&larr; Kembali</button>
+                 <button onclick="correctAnswers()" class="w-full bg-green-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-green-700 transition duration-300 flex-grow">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    Koreksi Jawaban
+                 </button>
+            </div>
+        </div>
+        
+        <!-- Step 3: Results -->
+        <div id="step-3" class="step-card">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-indigo-700">Koreksi Selesai!</h2>
+                <p class="text-gray-500 mt-1">Berikut adalah rekapitulasi skor siswa.</p>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-lg">
+                <h3 class="text-xl font-semibold mb-4 border-b pb-3">Hasil Koreksi Siswa</h3>
+                <div class="overflow-x-auto">
+                    <table id="results-table" class="min-w-full divide-y divide-gray-200"></table>
+                </div>
+            </div>
+             <div class="flex flex-col md:flex-row gap-4 mt-8">
+                <button onclick="resetApp()" class="w-full md:w-auto bg-gray-200 text-gray-800 font-bold py-3 px-6 rounded-lg hover:bg-gray-300 transition duration-300">Mulai Lagi</button>
+                <button id="download-btn" onclick="downloadExcel()" class="w-full bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition duration-300 flex-grow">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                    Download Hasil (Excel)
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for notifications -->
+    <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50 p-4">
+        <div class="bg-white rounded-lg p-8 shadow-2xl max-w-sm w-full text-center">
+            <div id="modal-icon" class="mx-auto mb-4 w-16 h-16 flex items-center justify-center"></div>
+            <h3 id="modal-title" class="text-xl font-bold mb-2"></h3>
+            <p id="modal-message" class="text-gray-600"></p>
+            <button onclick="closeModal()" class="mt-6 bg-indigo-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-indigo-700 transition duration-300">Tutup</button>
+        </div>
+    </div>
+
+    <script>
+        // Global state
+        let studentData = [], answerKey = [], reportInfo = {}, complexQuestionsSet = new Set();
+
+        function goToStep(step) {
+            document.querySelectorAll('.step-card').forEach(card => card.classList.remove('active'));
+            document.getElementById(`step-${step}`).classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        function showModal(type, title, message) {
+            const modal = document.getElementById('modal');
+            const modalIcon = document.getElementById('modal-icon');
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-message').innerText = message;
+            const icons = {
+                error: `<svg class="w-16 h-16 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`,
+                success: `<svg class="w-16 h-16 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`
+            };
+            modalIcon.innerHTML = icons[type] || '';
+            modal.classList.remove('hidden');
+        }
+        function closeModal() { document.getElementById('modal').classList.add('hidden'); }
+        
+        function generateAnswerKeyInputs() {
+            const numQuestions = parseInt(document.getElementById('num-questions').value) || 0;
+            const container = document.getElementById('answer-key-container');
+            const grid = document.getElementById('answer-key-grid');
+            
+            if (numQuestions > 0) {
+                container.classList.remove('hidden');
+            } else {
+                container.classList.add('hidden');
+            }
+
+            grid.innerHTML = ''; // Clear previous inputs
+            for (let i = 1; i <= numQuestions; i++) {
+                grid.innerHTML += `
+                    <div class="flex flex-col items-center">
+                        <label for="key-input-${i}" class="text-xs font-medium text-gray-500 mb-1">${i}</label>
+                        <input type="text" id="key-input-${i}" class="key-input uppercase" />
+                    </div>
+                `;
+            }
+        }
+
+        function setupTable() {
+            const numStudents = parseInt(document.getElementById('num-students').value);
+            const numQuestions = parseInt(document.getElementById('num-questions').value);
+            
+            const keyInputs = document.querySelectorAll('#answer-key-grid .key-input');
+            const key = Array.from(keyInputs).map(input => input.value.trim().toUpperCase().split('').sort().join(''));
+
+            const complexStr = document.getElementById('complex-questions').value;
+            complexQuestionsSet = new Set(complexStr.split(',').map(n => parseInt(n.trim())).filter(n => !isNaN(n)));
+
+            if (isNaN(numStudents) || isNaN(numQuestions) || numStudents <= 0 || numQuestions <= 0) {
+                showModal('error', 'Input Tidak Valid', 'Jumlah siswa dan jumlah soal harus diisi dengan angka lebih dari 0.');
+                return;
+            }
+            if (key.length !== numQuestions || key.includes('')) {
+                showModal('error', 'Kunci Jawaban Tidak Sesuai', `Jumlah kunci jawaban (${key.length}) tidak sama dengan jumlah soal (${numQuestions}), atau ada kunci yang kosong.`);
+                return;
+            }
+            
+            answerKey = key;
+            reportInfo = {
+                mapel: document.getElementById('mapel').value || 'N/A',
+                kelas: document.getElementById('kelas').value || 'N/A',
+            };
+
+            const table = document.getElementById('input-table');
+            table.innerHTML = '';
+
+            const thead = document.createElement('thead');
+            thead.className = "bg-gray-50";
+            let headerRow = `<tr><th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th><th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Siswa</th>`;
+            for (let i = 1; i <= numQuestions; i++) {
+                headerRow += `<th class="p-2 text-center text-xs font-medium ${complexQuestionsSet.has(i) ? 'text-indigo-600' : 'text-gray-500'} uppercase tracking-wider">${i}${complexQuestionsSet.has(i) ? '*' : ''}</th>`;
+            }
+            headerRow += '</tr>';
+            thead.innerHTML = headerRow;
+            table.appendChild(thead);
+
+            const tbody = document.createElement('tbody');
+            tbody.className = "bg-white divide-y divide-gray-200";
+            let bodyRows = '';
+            for (let i = 1; i <= numStudents; i++) {
+                bodyRows += `<tr><td class="px-6 py-4 whitespace-nowrap">${i}</td><td class="px-6 py-4"><input type="text" class="w-full bg-transparent focus:outline-none" placeholder="Siswa ${i}"></td>`;
+                for (let j = 1; j <= numQuestions; j++) {
+                    bodyRows += `<td class="p-1"><input type="text" class="table-input uppercase"></td>`;
+                }
+                bodyRows += '</tr>';
+            }
+            tbody.innerHTML = bodyRows;
+            table.appendChild(tbody);
+            
+            document.getElementById('table-container').addEventListener('paste', handlePaste);
+            goToStep(2);
+        }
+
+        function handlePaste(event) {
+            event.preventDefault();
+            const pasteData = (event.clipboardData || window.clipboardData).getData('text');
+            const rows = pasteData.split('\n').map(row => row.split('\t'));
+            const tableRows = document.getElementById('input-table').rows;
+
+            const startRow = event.target.closest('tr')?.rowIndex || 1;
+            const startCol = event.target.closest('td')?.cellIndex || 1;
+
+            for (let i = 0; i < rows.length; i++) {
+                const rowIndex = startRow + i;
+                if (rowIndex >= tableRows.length) continue;
+                for (let j = 0; j < rows[i].length; j++) {
+                    const colIndex = startCol + j;
+                    if (colIndex >= tableRows[rowIndex].cells.length) continue;
+                    
+                    const input = tableRows[rowIndex].cells[colIndex].querySelector('input');
+                    if (input) input.value = rows[i][j].trim();
+                }
+            }
+        }
+        
+        function correctAnswers() {
+            const numQuestions = answerKey.length;
+            const tableRows = document.getElementById('input-table').rows;
+            const scoreSimple = parseFloat(document.getElementById('simple-score').value) || 1;
+            const maxScoreComplex = parseFloat(document.getElementById('complex-score').value) || 5;
+            studentData = [];
+
+            const numSimple = numQuestions - complexQuestionsSet.size;
+            const maxPossibleScore = (numSimple * scoreSimple) + (complexQuestionsSet.size * maxScoreComplex);
+
+            for (let i = 1; i < tableRows.length; i++) {
+                const row = tableRows[i];
+                const studentName = row.cells[1].querySelector('input').value || `Siswa ${i}`;
+                const answers = [];
+                let totalScore = 0;
+
+                for (let j = 0; j < numQuestions; j++) {
+                    const questionNumber = j + 1;
+                    const studentAnswerRaw = row.cells[j + 2].querySelector('input').value.toUpperCase();
+                    const correctAnswer = answerKey[j];
+                    answers.push(studentAnswerRaw);
+
+                    if (complexQuestionsSet.has(questionNumber)) {
+                        const studentAnswerSorted = studentAnswerRaw.split('').sort().join('');
+                        const answerSet = new Set(studentAnswerSorted.split(''));
+                        const keySet = new Set(correctAnswer.split(''));
+
+                        let hasIncorrect = false;
+                        for (const char of answerSet) {
+                            if (!keySet.has(char)) {
+                                hasIncorrect = true;
+                                break;
+                            }
+                        }
+
+                        if (!hasIncorrect && studentAnswerSorted.length > 0) {
+                            const correctChoicesCount = answerSet.size;
+                            const totalCorrectChoices = keySet.size;
+                            if (totalCorrectChoices > 0) {
+                                totalScore += (correctChoicesCount / totalCorrectChoices) * maxScoreComplex;
+                            }
+                        }
+                    } else {
+                        if (studentAnswerRaw === correctAnswer) {
+                            totalScore += scoreSimple;
+                        }
+                    }
+                }
+                const finalGrade = maxPossibleScore > 0 ? (totalScore / maxPossibleScore) * 100 : 0;
+                studentData.push({ name: studentName, answers, totalScore, score: finalGrade });
+            }
+
+            displayResults();
+            goToStep(3);
+        }
+
+        function displayResults() {
+            const resultsTable = document.getElementById('results-table');
+            resultsTable.innerHTML = `<thead class="bg-gray-50"><tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Siswa</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Skor</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nilai Akhir</th></tr></thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                ${studentData.map((s, i) => `<tr>
+                    <td class="px-6 py-4">${i + 1}</td>
+                    <td class="px-6 py-4 font-medium">${s.name}</td>
+                    <td class="px-6 py-4">${s.totalScore.toFixed(2)}</td>
+                    <td class="px-6 py-4 font-semibold">${s.score.toFixed(2)}</td>
+                    </tr>`).join('')}
+                </tbody>`;
+        }
+
+        function downloadExcel() {
+            const wb = XLSX.utils.book_new();
+            const ws_data = [
+                [`REKAPITULASI HASIL KOREKSI - ${reportInfo.mapel.toUpperCase()}`],
+                [`KELAS: ${reportInfo.kelas.toUpperCase()}`],
+                [null],
+                ["No", "Nama Siswa", "Total Skor", "Nilai Akhir", ...answerKey.map((_, i) => `Soal ${i + 1}`)],
+                ...studentData.map((s, i) => [i + 1, s.name, parseFloat(s.totalScore.toFixed(2)), parseFloat(s.score.toFixed(2)), ...s.answers]),
+                [null],
+                ["KUNCI JAWABAN", null, null, null, ...answerKey]
+            ];
+            const ws = XLSX.utils.aoa_to_sheet(ws_data);
+            ws['!merges'] = [ { s: { r: 0, c: 0 }, e: { r: 0, c: answerKey.length + 3 } } ];
+            XLSX.utils.book_append_sheet(wb, ws, "Hasil Koreksi");
+            XLSX.writeFile(wb, `Hasil_Koreksi_${reportInfo.mapel}_${reportInfo.kelas}.xlsx`);
+        }
+        
+        function resetApp() {
+            document.getElementById('mapel').value = '';
+            document.getElementById('kelas').value = '';
+            document.getElementById('num-students').value = '';
+            document.getElementById('num-questions').value = '';
+            document.getElementById('complex-questions').value = '';
+            document.getElementById('simple-score').value = '';
+            document.getElementById('complex-score').value = '';
+            
+            document.getElementById('answer-key-grid').innerHTML = '';
+            document.getElementById('answer-key-container').classList.add('hidden');
+
+            studentData = [];
+            answerKey = [];
+            reportInfo = {};
+            complexQuestionsSet = new Set();
+            goToStep(1);
+        }
+
+        // NEW: Function to handle arrow key navigation in the answer key grid
+        function handleKeyNavigation(event) {
+            const target = event.target;
+            if (target.tagName !== 'INPUT' || !target.classList.contains('key-input')) {
+                return;
+            }
+
+            const key = event.key;
+            if (!['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(key)) {
+                return; 
+            }
+
+            event.preventDefault();
+
+            const allKeys = Array.from(document.querySelectorAll('#answer-key-grid .key-input'));
+            const currentIndex = allKeys.indexOf(target);
+            const grid = document.getElementById('answer-key-grid');
+            const numColumns = window.getComputedStyle(grid).gridTemplateColumns.split(' ').length;
+
+            let nextIndex = -1;
+
+            switch (key) {
+                case 'ArrowLeft':
+                    nextIndex = currentIndex - 1;
+                    break;
+                case 'ArrowRight':
+                    nextIndex = currentIndex + 1;
+                    break;
+                case 'ArrowUp':
+                    nextIndex = currentIndex - numColumns;
+                    break;
+                case 'ArrowDown':
+                    nextIndex = currentIndex + numColumns;
+                    break;
+            }
+
+            if (nextIndex >= 0 && nextIndex < allKeys.length) {
+                allKeys[nextIndex].focus();
+            }
+        }
+
+        // Add the event listener to the grid container
+        document.getElementById('answer-key-grid').addEventListener('keydown', handleKeyNavigation);
+
+    </script>
+</body>
+</html>
+
