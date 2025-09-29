@@ -38,7 +38,7 @@
 </head>
 <body class="bg-gray-50 text-gray-800">
 
-    <div class="container mx-auto p-4 md:p-8 max-w-7xl">
+    <div class="container mx-auto p-4 md:p-8 max-w-screen-2xl">
         <header class="text-center mb-10">
             <h1 class="text-4xl font-bold text-gray-900">Aplikasi Koreksi Soal</h1>
             <p class="text-gray-600 mt-2 text-lg">Mendukung Pilihan Ganda Sederhana & Kompleks (MCMA).</p>
@@ -59,10 +59,14 @@
                  <fieldset class="border p-4 rounded-lg">
                     <legend class="px-2 font-semibold text-gray-700">Detail Soal & Siswa</legend>
                      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-                        <input type="number" id="num-students" placeholder="Jumlah Siswa" class="w-full p-3 border border-gray-300 rounded-lg">
+                        <!-- NEW: Student name textarea -->
+                        <div class="md:col-span-2">
+                            <label for="student-names" class="block mb-2 font-semibold text-gray-700">Input Nama Siswa (satu per baris)</label>
+                            <textarea id="student-names" rows="8" class="w-full p-3 border border-gray-300 rounded-lg" placeholder="Tempel daftar nama siswa di sini..." oninput="updateStudentCount()"></textarea>
+                            <input type="text" id="num-students-display" placeholder="Jumlah Siswa akan muncul di sini" class="w-full p-3 mt-2 bg-gray-100 border border-gray-300 rounded-lg" readonly>
+                        </div>
                         <input type="number" id="num-questions" placeholder="Jumlah Soal Pilihan Ganda" class="w-full p-3 border border-gray-300 rounded-lg" oninput="generateAnswerKeyInputs()">
                         
-                        <!-- UPDATED: Score inputs -->
                         <div class="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6">
                             <input type="number" id="simple-score" class="w-full p-3 border border-gray-300 rounded-lg" placeholder="Skor PG Sederhana (cth: 1)">
                             <input type="number" id="complex-score" class="w-full p-3 border border-gray-300 rounded-lg" placeholder="Skor PG Kompleks (cth: 5)">
@@ -71,10 +75,9 @@
                             <input type="text" id="complex-questions" class="w-full p-3 border border-gray-300 rounded-lg" placeholder="Nomor Soal Kompleks (pisahkan koma, cth: 3,7,11)">
                         </div>
                         
-                        <!-- NEW: Answer Key Grid Container -->
                         <div id="answer-key-container" class="md:col-span-2 hidden mt-4">
                             <label class="font-semibold text-gray-700 mb-2 block">Input Kunci Jawaban</label>
-                            <div id="answer-key-grid" class="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 gap-x-2 gap-y-4">
+                            <div id="answer-key-grid" class="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 lg:grid-cols-12 xl:grid-cols-15 gap-x-2 gap-y-4">
                                 <!-- Answer key inputs will be generated here -->
                             </div>
                         </div>
@@ -88,7 +91,7 @@
         <!-- Step 2: Input -->
         <div id="step-2" class="step-card bg-white p-8 rounded-2xl shadow-lg">
             <h2 class="text-2xl font-semibold mb-2 text-indigo-700">Langkah 2: Input Jawaban Siswa</h2>
-             <p class="text-gray-500 mb-6">Isi nama dan jawaban siswa. Anda bisa <strong class="text-indigo-600">copy-paste dari Excel</strong>.</p>
+             <p class="text-gray-500 mb-6">Isi nama dan jawaban siswa. Gunakan <strong class="text-indigo-600">tombol panah</strong> untuk navigasi cepat atau <strong class="text-indigo-600">copy-paste dari Excel</strong>.</p>
             <div id="table-container" class="overflow-x-auto">
                 <table id="input-table" class="min-w-full divide-y divide-gray-200"></table>
             </div>
@@ -157,6 +160,11 @@
         }
         function closeModal() { document.getElementById('modal').classList.add('hidden'); }
         
+        function updateStudentCount() {
+            const names = document.getElementById('student-names').value.split('\n').filter(name => name.trim() !== '');
+            document.getElementById('num-students-display').value = `${names.length} Siswa`;
+        }
+
         function generateAnswerKeyInputs() {
             const numQuestions = parseInt(document.getElementById('num-questions').value) || 0;
             const container = document.getElementById('answer-key-container');
@@ -180,7 +188,8 @@
         }
 
         function setupTable() {
-            const numStudents = parseInt(document.getElementById('num-students').value);
+            const studentNames = document.getElementById('student-names').value.split('\n').filter(name => name.trim() !== '');
+            const numStudents = studentNames.length;
             const numQuestions = parseInt(document.getElementById('num-questions').value);
             
             const keyInputs = document.querySelectorAll('#answer-key-grid .key-input');
@@ -189,8 +198,8 @@
             const complexStr = document.getElementById('complex-questions').value;
             complexQuestionsSet = new Set(complexStr.split(',').map(n => parseInt(n.trim())).filter(n => !isNaN(n)));
 
-            if (isNaN(numStudents) || isNaN(numQuestions) || numStudents <= 0 || numQuestions <= 0) {
-                showModal('error', 'Input Tidak Valid', 'Jumlah siswa dan jumlah soal harus diisi dengan angka lebih dari 0.');
+            if (numStudents <= 0 || isNaN(numQuestions) || numQuestions <= 0) {
+                showModal('error', 'Input Tidak Valid', 'Jumlah siswa dan jumlah soal harus diisi dengan benar.');
                 return;
             }
             if (key.length !== numQuestions || key.includes('')) {
@@ -211,7 +220,7 @@
             thead.className = "bg-gray-50";
             let headerRow = `<tr><th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th><th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Siswa</th>`;
             for (let i = 1; i <= numQuestions; i++) {
-                headerRow += `<th class="p-2 text-center text-xs font-medium ${complexQuestionsSet.has(i) ? 'text-indigo-600' : 'text-gray-500'} uppercase tracking-wider">${i}${complexQuestionsSet.has(i) ? '*' : ''}</th>`;
+                headerRow += `<th class="p-2 text-center text-xs font-medium ${complexQuestionsSet.has(i) ? 'text-indigo-600 font-bold' : 'text-gray-500'} uppercase tracking-wider">${i}${complexQuestionsSet.has(i) ? '*' : ''}</th>`;
             }
             headerRow += '</tr>';
             thead.innerHTML = headerRow;
@@ -220,8 +229,8 @@
             const tbody = document.createElement('tbody');
             tbody.className = "bg-white divide-y divide-gray-200";
             let bodyRows = '';
-            for (let i = 1; i <= numStudents; i++) {
-                bodyRows += `<tr><td class="px-6 py-4 whitespace-nowrap">${i}</td><td class="px-6 py-4"><input type="text" class="w-full bg-transparent focus:outline-none" placeholder="Siswa ${i}"></td>`;
+            for (let i = 0; i < numStudents; i++) {
+                bodyRows += `<tr><td class="px-6 py-4 whitespace-nowrap">${i + 1}</td><td class="px-6 py-4"><input type="text" value="${studentNames[i]}" class="w-full bg-transparent focus:outline-none student-name-input"></td>`;
                 for (let j = 1; j <= numQuestions; j++) {
                     bodyRows += `<td class="p-1"><input type="text" class="table-input uppercase"></td>`;
                 }
@@ -230,7 +239,8 @@
             tbody.innerHTML = bodyRows;
             table.appendChild(tbody);
             
-            document.getElementById('table-container').addEventListener('paste', handlePaste);
+            table.addEventListener('paste', handlePaste);
+            table.addEventListener('keydown', handleStudentAnswerNavigation);
             goToStep(2);
         }
 
@@ -238,22 +248,23 @@
             event.preventDefault();
             const pasteData = (event.clipboardData || window.clipboardData).getData('text');
             const rows = pasteData.split('\n').map(row => row.split('\t'));
-            const tableRows = document.getElementById('input-table').rows;
+            const table = document.getElementById('input-table');
+            const inputs = table.querySelectorAll('tbody input');
 
-            const startRow = event.target.closest('tr')?.rowIndex || 1;
-            const startCol = event.target.closest('td')?.cellIndex || 1;
+            if (!event.target.matches('input')) return;
 
-            for (let i = 0; i < rows.length; i++) {
-                const rowIndex = startRow + i;
-                if (rowIndex >= tableRows.length) continue;
-                for (let j = 0; j < rows[i].length; j++) {
-                    const colIndex = startCol + j;
-                    if (colIndex >= tableRows[rowIndex].cells.length) continue;
-                    
-                    const input = tableRows[rowIndex].cells[colIndex].querySelector('input');
-                    if (input) input.value = rows[i][j].trim();
-                }
-            }
+            const allInputs = Array.from(inputs);
+            const startInputIndex = allInputs.indexOf(event.target);
+            const numCols = (document.getElementById('num-questions').value * 1) + 1; // +1 for name column
+
+            rows.forEach((row, i) => {
+                row.forEach((cell, j) => {
+                    const inputIndex = startInputIndex + (i * numCols) + j;
+                    if (inputIndex < allInputs.length) {
+                        allInputs[inputIndex].value = cell.trim();
+                    }
+                });
+            });
         }
         
         function correctAnswers() {
@@ -270,12 +281,14 @@
                 const row = tableRows[i];
                 const studentName = row.cells[1].querySelector('input').value || `Siswa ${i}`;
                 const answers = [];
+                const scoresPerQuestion = [];
                 let totalScore = 0;
 
                 for (let j = 0; j < numQuestions; j++) {
                     const questionNumber = j + 1;
                     const studentAnswerRaw = row.cells[j + 2].querySelector('input').value.toUpperCase();
                     const correctAnswer = answerKey[j];
+                    let questionScore = 0;
                     answers.push(studentAnswerRaw);
 
                     if (complexQuestionsSet.has(questionNumber)) {
@@ -285,27 +298,26 @@
 
                         let hasIncorrect = false;
                         for (const char of answerSet) {
-                            if (!keySet.has(char)) {
-                                hasIncorrect = true;
-                                break;
-                            }
+                            if (!keySet.has(char)) { hasIncorrect = true; break; }
                         }
 
                         if (!hasIncorrect && studentAnswerSorted.length > 0) {
                             const correctChoicesCount = answerSet.size;
                             const totalCorrectChoices = keySet.size;
                             if (totalCorrectChoices > 0) {
-                                totalScore += (correctChoicesCount / totalCorrectChoices) * maxScoreComplex;
+                                questionScore = (correctChoicesCount / totalCorrectChoices) * maxScoreComplex;
                             }
                         }
                     } else {
                         if (studentAnswerRaw === correctAnswer) {
-                            totalScore += scoreSimple;
+                            questionScore = scoreSimple;
                         }
                     }
+                    scoresPerQuestion.push(parseFloat(questionScore.toFixed(2)));
+                    totalScore += questionScore;
                 }
                 const finalGrade = maxPossibleScore > 0 ? (totalScore / maxPossibleScore) * 100 : 0;
-                studentData.push({ name: studentName, answers, totalScore, score: finalGrade });
+                studentData.push({ name: studentName, answers, totalScore, score: finalGrade, scoresPerQuestion });
             }
 
             displayResults();
@@ -331,7 +343,9 @@
 
         function downloadExcel() {
             const wb = XLSX.utils.book_new();
-            const ws_data = [
+
+            // Sheet 1: Hasil Koreksi (Summary)
+            const ws_data_summary = [
                 [`REKAPITULASI HASIL KOREKSI - ${reportInfo.mapel.toUpperCase()}`],
                 [`KELAS: ${reportInfo.kelas.toUpperCase()}`],
                 [null],
@@ -340,16 +354,27 @@
                 [null],
                 ["KUNCI JAWABAN", null, null, null, ...answerKey]
             ];
-            const ws = XLSX.utils.aoa_to_sheet(ws_data);
-            ws['!merges'] = [ { s: { r: 0, c: 0 }, e: { r: 0, c: answerKey.length + 3 } } ];
-            XLSX.utils.book_append_sheet(wb, ws, "Hasil Koreksi");
+            const ws_summary = XLSX.utils.aoa_to_sheet(ws_data_summary);
+            ws_summary['!merges'] = [ { s: { r: 0, c: 0 }, e: { r: 0, c: answerKey.length + 3 } } ];
+            XLSX.utils.book_append_sheet(wb, ws_summary, "Hasil Koreksi");
+            
+            // Sheet 2: Skor Per Soal
+            const scoreHeaders = answerKey.map((_, i) => `Skor Soal ${i + 1}`);
+            const ws_data_scores = [
+                ["No", "Nama Siswa", ...scoreHeaders, "Total Skor"],
+                ...studentData.map((s, i) => [i + 1, s.name, ...s.scoresPerQuestion, parseFloat(s.totalScore.toFixed(2))])
+            ];
+            const ws_scores = XLSX.utils.aoa_to_sheet(ws_data_scores);
+            XLSX.utils.book_append_sheet(wb, ws_scores, "Skor Per Soal");
+
             XLSX.writeFile(wb, `Hasil_Koreksi_${reportInfo.mapel}_${reportInfo.kelas}.xlsx`);
         }
         
         function resetApp() {
             document.getElementById('mapel').value = '';
             document.getElementById('kelas').value = '';
-            document.getElementById('num-students').value = '';
+            document.getElementById('student-names').value = '';
+            document.getElementById('num-students-display').value = '';
             document.getElementById('num-questions').value = '';
             document.getElementById('complex-questions').value = '';
             document.getElementById('simple-score').value = '';
@@ -365,17 +390,12 @@
             goToStep(1);
         }
 
-        // NEW: Function to handle arrow key navigation in the answer key grid
         function handleKeyNavigation(event) {
             const target = event.target;
-            if (target.tagName !== 'INPUT' || !target.classList.contains('key-input')) {
-                return;
-            }
+            if (target.tagName !== 'INPUT' || !target.classList.contains('key-input')) return;
 
             const key = event.key;
-            if (!['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(key)) {
-                return; 
-            }
+            if (!['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(key)) return; 
 
             event.preventDefault();
 
@@ -385,28 +405,40 @@
             const numColumns = window.getComputedStyle(grid).gridTemplateColumns.split(' ').length;
 
             let nextIndex = -1;
+            if (key === 'ArrowLeft') nextIndex = currentIndex - 1;
+            else if (key === 'ArrowRight') nextIndex = currentIndex + 1;
+            else if (key === 'ArrowUp') nextIndex = currentIndex - numColumns;
+            else if (key === 'ArrowDown') nextIndex = currentIndex + numColumns;
 
-            switch (key) {
-                case 'ArrowLeft':
-                    nextIndex = currentIndex - 1;
-                    break;
-                case 'ArrowRight':
-                    nextIndex = currentIndex + 1;
-                    break;
-                case 'ArrowUp':
-                    nextIndex = currentIndex - numColumns;
-                    break;
-                case 'ArrowDown':
-                    nextIndex = currentIndex + numColumns;
-                    break;
-            }
+            if (nextIndex >= 0 && nextIndex < allKeys.length) allKeys[nextIndex].focus();
+        }
+        
+        function handleStudentAnswerNavigation(event) {
+            const target = event.target;
+            if (target.tagName !== 'INPUT') return;
+            
+            const key = event.key;
+            if (!['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(key)) return;
 
-            if (nextIndex >= 0 && nextIndex < allKeys.length) {
-                allKeys[nextIndex].focus();
+            event.preventDefault();
+
+            const table = document.getElementById('input-table');
+            const allInputs = Array.from(table.querySelectorAll('tbody input'));
+            const currentIndex = allInputs.indexOf(target);
+            const numCols = (answerKey.length) + 1; // +1 for student name column
+
+            let nextIndex = -1;
+            if (key === 'ArrowLeft') nextIndex = currentIndex - 1;
+            else if (key === 'ArrowRight') nextIndex = currentIndex + 1;
+            else if (key === 'ArrowUp') nextIndex = currentIndex - numCols;
+            else if (key === 'ArrowDown') nextIndex = currentIndex + numCols;
+            
+            if (nextIndex >= 0 && nextIndex < allInputs.length) {
+                allInputs[nextIndex].focus();
+                allInputs[nextIndex].select();
             }
         }
 
-        // Add the event listener to the grid container
         document.getElementById('answer-key-grid').addEventListener('keydown', handleKeyNavigation);
 
     </script>
