@@ -13,69 +13,17 @@
         body { font-family: 'Inter', sans-serif; }
         .step-card { display: none; }
         .step-card.active { display: block; }
-        .table-input {
-            text-align: center;
-            border: 1px solid #d1d5db;
-            padding: 0.5rem;
-            width: 80px;
-            border-radius: 0.375rem;
-            transition: all 0.2s;
-        }
-        .table-input:focus {
-            outline: 2px solid transparent;
-            outline-offset: 2px;
-            border-color: #4f46e5;
-            box-shadow: 0 0 0 2px #c7d2fe;
-        }
-        .key-input {
-            text-align: center;
-            border: 1px solid #d1d5db;
-            padding: 0.5rem;
-            width: 100%;
-            border-radius: 0.375rem;
-        }
-        #table-container {
-            max-height: 70vh;
-        }
-        #input-table thead th {
-            position: sticky;
-            top: 0;
-            z-index: 10;
-            background-color: #f3f4f6;
-        }
-        #input-table tbody tr:nth-child(even) {
-            background-color: #f9fafb;
-        }
-        #input-table th:first-child,
-        #input-table td:first-child {
-            position: sticky;
-            left: 0;
-            z-index: 5;
-            width: 75px;
-            min-width: 75px;
-            border-right: 1px solid #e5e7eb;
-        }
-        #input-table th:nth-child(2),
-        #input-table td:nth-child(2) {
-            position: sticky;
-            left: 75px;
-            z-index: 5;
-            width: 250px;
-            min-width: 250px;
-            border-right: 1px solid #e5e7eb;
-        }
-        #input-table thead th:first-child,
-        #input-table thead th:nth-child(2) {
-            background-color: #f3f4f6;
-        }
-        #input-table tbody td:first-child,
-        #input-table tbody td:nth-child(2) {
-            background-color: #ffffff;
-        }
-        #input-table tbody tr:nth-child(even) td:first-child,
-        #input-table tbody tr:nth-child(even) td:nth-child(2) {
-            background-color: #f9fafb;
-        }
+        .table-input { text-align: center; border: 1px solid #d1d5db; padding: 0.5rem; width: 80px; border-radius: 0.375rem; transition: all 0.2s; }
+        .table-input:focus { outline: 2px solid transparent; outline-offset: 2px; border-color: #4f46e5; box-shadow: 0 0 0 2px #c7d2fe; }
+        .key-input { text-align: center; border: 1px solid #d1d5db; padding: 0.5rem; width: 100%; border-radius: 0.375rem; }
+        #table-container { max-height: 70vh; }
+        #input-table thead th { position: sticky; top: 0; z-index: 10; background-color: #f3f4f6; }
+        #input-table tbody tr:nth-child(even) { background-color: #f9fafb; }
+        #input-table th:first-child, #input-table td:first-child { position: sticky; left: 0; z-index: 5; width: 75px; min-width: 75px; border-right: 1px solid #e5e7eb; }
+        #input-table th:nth-child(2), #input-table td:nth-child(2) { position: sticky; left: 75px; z-index: 5; width: 250px; min-width: 250px; border-right: 1px solid #e5e7eb; }
+        #input-table thead th:first-child, #input-table thead th:nth-child(2) { background-color: #f3f4f6; }
+        #input-table tbody td:first-child, #input-table tbody td:nth-child(2) { background-color: #ffffff; }
+        #input-table tbody tr:nth-child(even) td:first-child, #input-table tbody tr:nth-child(even) td:nth-child(2) { background-color: #f9fafb; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
@@ -94,7 +42,7 @@
 
         <!-- Step 1: Setup -->
         <div id="step-1" class="step-card active bg-white p-8 rounded-2xl shadow-lg transition-all duration-500">
-            <h2 class="text-2xl font-semibold mb-2 text-indigo-700">Langkah 1: Pengaturan Ujian</h2>
+             <h2 class="text-2xl font-semibold mb-2 text-indigo-700">Langkah 1: Pengaturan Ujian</h2>
             <p class="text-gray-500 mb-6">Masukkan informasi dasar mengenai ujian dan jenis soal. Progres Anda akan tersimpan otomatis di browser.</p>
             <div id="setup-form" class="space-y-6">
                 <fieldset class="border p-4 rounded-lg">
@@ -112,9 +60,7 @@
                             <textarea id="student-names" rows="8" class="w-full p-3 border border-gray-300 rounded-lg" placeholder="Tempel daftar nama siswa di sini..." oninput="updateStudentCount()"></textarea>
                             <input type="text" id="num-students-display" placeholder="Jumlah Siswa akan muncul di sini" class="w-full p-3 mt-2 bg-gray-100 border border-gray-300 rounded-lg" readonly>
                         </div>
-                        
                         <input type="number" id="num-questions" placeholder="Jumlah Soal Pilihan Ganda" class="w-full p-3 border border-gray-300 rounded-lg" oninput="generateAnswerKeyInputs()">
-                        
                         <div class="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6">
                             <input type="number" id="simple-score" class="w-full p-3 border border-gray-300 rounded-lg" placeholder="Skor PG Sederhana (cth: 1)">
                             <input type="number" id="complex-score" class="w-full p-3 border border-gray-300 rounded-lg" placeholder="Skor PG Kompleks (cth: 5)">
@@ -122,13 +68,10 @@
                         <div class="md:col-span-2">
                             <input type="text" id="complex-questions" class="w-full p-3 border border-gray-300 rounded-lg" placeholder="Nomor Soal Kompleks (pisahkan koma, cth: 3,7,11)">
                         </div>
-                        
                         <div id="answer-key-container" class="md:col-span-2 hidden mt-4">
                             <label class="font-semibold text-gray-700 mb-2 block">Input Kunci Jawaban</label>
-                            <div id="answer-key-grid" class="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 lg:grid-cols-12 xl:grid-cols-15 gap-x-2 gap-y-4">
-                            </div>
+                            <div id="answer-key-grid" class="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 lg:grid-cols-12 xl:grid-cols-15 gap-x-2 gap-y-4"></div>
                         </div>
-
                     </div>
                 </fieldset>
             </div>
@@ -143,7 +86,7 @@
                 <table id="input-table" class="min-w-full divide-y divide-gray-200"></table>
             </div>
             <div class="flex flex-col md:flex-row gap-4 mt-8">
-                 <button onclick="goToStep(1)" class="w-full md:w-auto bg-gray-200 text-gray-800 font-bold py-3 px-6 rounded-lg hover:bg-gray-300 transition duration-300">&larr; Kembali</button>
+                 <button onclick="goToStep(1)" class="w-full md:w-auto bg-gray-200 text-gray-800 font-bold py-3 px-6 rounded-lg hover:bg-gray-300 transition duration-300">&larr; Kembali ke Pengaturan</button>
                  <button onclick="correctAnswers()" class="w-full bg-green-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-green-700 transition duration-300 flex-grow">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                     Koreksi Jawaban
@@ -200,10 +143,7 @@
             const modalIcon = document.getElementById('modal-icon');
             document.getElementById('modal-title').innerText = title;
             document.getElementById('modal-message').innerText = message;
-            const icons = {
-                error: `<svg class="w-16 h-16 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`,
-                success: `<svg class="w-16 h-16 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`
-            };
+            const icons = { error: `<svg class="w-16 h-16 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`, success: `<svg class="w-16 h-16 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>` };
             modalIcon.innerHTML = icons[type] || '';
             modal.classList.remove('hidden');
         }
@@ -219,21 +159,10 @@
             const numQuestions = parseInt(document.getElementById('num-questions').value) || 0;
             const container = document.getElementById('answer-key-container');
             const grid = document.getElementById('answer-key-grid');
-            
-            if (numQuestions > 0) {
-                container.classList.remove('hidden');
-            } else {
-                container.classList.add('hidden');
-            }
-
-            grid.innerHTML = ''; // Clear previous inputs
+            if (numQuestions > 0) container.classList.remove('hidden'); else container.classList.add('hidden');
+            grid.innerHTML = '';
             for (let i = 1; i <= numQuestions; i++) {
-                grid.innerHTML += `
-                    <div class="flex flex-col items-center">
-                        <label for="key-input-${i}" class="text-xs font-medium text-gray-500 mb-1">${i}</label>
-                        <input type="text" id="key-input-${i}" class="key-input uppercase" />
-                    </div>
-                `;
+                grid.innerHTML += `<div class="flex flex-col items-center"><label for="key-input-${i}" class="text-xs font-medium text-gray-500 mb-1">${i}</label><input type="text" id="key-input-${i}" class="key-input uppercase" /></div>`;
             }
         }
 
@@ -241,10 +170,8 @@
             const studentNames = document.getElementById('student-names').value.split('\n').filter(name => name.trim() !== '');
             const numStudents = studentNames.length;
             const numQuestions = parseInt(document.getElementById('num-questions').value);
-            
             const keyInputs = document.querySelectorAll('#answer-key-grid .key-input');
             const key = Array.from(keyInputs).map(input => input.value.trim().toUpperCase().split('').sort().join(''));
-
             const complexStr = document.getElementById('complex-questions').value;
             complexQuestionsSet = new Set(complexStr.split(',').map(n => parseInt(n.trim())).filter(n => !isNaN(n)));
 
@@ -258,14 +185,10 @@
             }
             
             answerKey = key;
-            reportInfo = {
-                mapel: document.getElementById('mapel').value || 'N/A',
-                kelas: document.getElementById('kelas').value || 'N/A',
-            };
+            reportInfo = { mapel: document.getElementById('mapel').value || 'N/A', kelas: document.getElementById('kelas').value || 'N/A' };
 
             const table = document.getElementById('input-table');
             table.innerHTML = '';
-
             const thead = document.createElement('thead');
             thead.className = "bg-gray-100";
             let headerRow = `<tr><th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th><th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Siswa</th>`;
@@ -279,12 +202,10 @@
             const tbody = document.createElement('tbody');
             tbody.className = "bg-white divide-y divide-gray-200";
             let bodyRows = '';
-            const answersToLoad = savedAnswers;
-
             for (let i = 0; i < numStudents; i++) {
                 bodyRows += `<tr><td class="px-6 py-4 whitespace-nowrap">${i + 1}</td><td class="px-6 py-4"><input type="text" value="${studentNames[i]}" class="w-full bg-transparent focus:outline-none student-name-input"></td>`;
                 for (let j = 1; j <= numQuestions; j++) {
-                    const savedValue = answersToLoad?.[i]?.[j - 1] || '';
+                    const savedValue = savedAnswers?.[i]?.[j - 1] || '';
                     bodyRows += `<td class="p-1"><input type="text" value="${savedValue}" class="table-input uppercase"></td>`;
                 }
                 bodyRows += '</tr>';
@@ -299,26 +220,21 @@
             return true;
         }
         
-        // --- Step 2: Input & Correction ---
+        // --- Correction & Results ---
         function handlePaste(event) {
             event.preventDefault();
             const pasteData = (event.clipboardData || window.clipboardData).getData('text');
             const rows = pasteData.split('\n').map(row => row.split('\t'));
             const table = document.getElementById('input-table');
             const inputs = table.querySelectorAll('tbody input');
-
             if (!event.target.matches('input')) return;
-
             const allInputs = Array.from(inputs);
             const startInputIndex = allInputs.indexOf(event.target);
             const numCols = (document.getElementById('num-questions').value * 1) + 1;
-
             rows.forEach((row, i) => {
                 row.forEach((cell, j) => {
                     const inputIndex = startInputIndex + (i * numCols) + j;
-                    if (inputIndex < allInputs.length) {
-                        allInputs[inputIndex].value = cell.trim();
-                    }
+                    if (inputIndex < allInputs.length) allInputs[inputIndex].value = cell.trim();
                 });
             });
             saveProgress();
@@ -330,7 +246,6 @@
             const scoreSimple = parseFloat(document.getElementById('simple-score').value) || 1;
             const maxScoreComplex = parseFloat(document.getElementById('complex-score').value) || 5;
             studentData = [];
-
             const numSimple = numQuestions - complexQuestionsSet.size;
             const maxPossibleScore = (numSimple * scoreSimple) + (complexQuestionsSet.size * maxScoreComplex);
 
@@ -339,7 +254,7 @@
                 const studentName = row.cells[1].querySelector('input').value || `Siswa ${i}`;
                 const answers = [];
                 const scoresPerQuestion = [];
-                let totalScore = 0;
+                let totalScore = 0, totalScorePG = 0, totalScorePGK = 0;
 
                 for (let j = 0; j < numQuestions; j++) {
                     const questionNumber = j + 1;
@@ -352,126 +267,93 @@
                         const studentAnswerSorted = studentAnswerRaw.split('').sort().join('');
                         const answerSet = new Set(studentAnswerSorted.split(''));
                         const keySet = new Set(correctAnswer.split(''));
-
                         let hasIncorrect = false;
-                        for (const char of answerSet) {
-                            if (!keySet.has(char)) { hasIncorrect = true; break; }
-                        }
-
+                        for (const char of answerSet) { if (!keySet.has(char)) { hasIncorrect = true; break; } }
+                        
                         if (!hasIncorrect && studentAnswerSorted.length > 0) {
                             const correctChoicesCount = answerSet.size;
                             const totalCorrectChoices = keySet.size;
+                            // REVERTED SCORING LOGIC
                             if (totalCorrectChoices > 0) {
                                 questionScore = (correctChoicesCount / totalCorrectChoices) * maxScoreComplex;
                             }
                         }
+                        totalScorePGK += questionScore;
                     } else {
-                        if (studentAnswerRaw === correctAnswer) {
-                            questionScore = scoreSimple;
-                        }
+                        if (studentAnswerRaw === correctAnswer) questionScore = scoreSimple;
+                        totalScorePG += questionScore;
                     }
                     scoresPerQuestion.push(parseFloat(questionScore.toFixed(2)));
                     totalScore += questionScore;
                 }
                 const finalGrade = maxPossibleScore > 0 ? (totalScore / maxPossibleScore) * 100 : 0;
-                studentData.push({ name: studentName, answers, totalScore, score: finalGrade, scoresPerQuestion });
+                studentData.push({ name: studentName, answers, totalScore: parseFloat(totalScore.toFixed(2)), score: finalGrade, scoresPerQuestion, totalScorePG: parseFloat(totalScorePG.toFixed(2)), totalScorePGK: parseFloat(totalScorePGK.toFixed(2)) });
             }
-
             displayResults();
             goToStep(3);
         }
 
-        // --- Step 3: Display & Download ---
         function displayResults() {
             const resultsTable = document.getElementById('results-table');
-            resultsTable.innerHTML = `<thead class="bg-gray-50"><tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Siswa</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Skor</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nilai Akhir</th></tr></thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                ${studentData.map((s, i) => `<tr>
-                    <td class="px-6 py-4">${i + 1}</td>
-                    <td class="px-6 py-4 font-medium">${s.name}</td>
-                    <td class="px-6 py-4">${s.totalScore.toFixed(2)}</td>
-                    <td class="px-6 py-4 font-semibold">${s.score.toFixed(2)}</td>
-                    </tr>`).join('')}
-                </tbody>`;
+            resultsTable.innerHTML = `<thead class="bg-gray-50"><tr><th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th><th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Siswa</th><th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Skor</th><th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nilai Akhir</th></tr></thead><tbody class="bg-white divide-y divide-gray-200">${studentData.map((s, i) => `<tr><td class="px-6 py-4">${i + 1}</td><td class="px-6 py-4 font-medium">${s.name}</td><td class="px-6 py-4">${s.totalScore.toFixed(2)}</td><td class="px-6 py-4 font-semibold">${s.score.toFixed(2)}</td></tr>`).join('')}</tbody>`;
         }
 
         function downloadExcel() {
             const wb = XLSX.utils.book_new();
-            const ws_data_summary = [
-                [`REKAPITULASI HASIL KOREKSI - ${reportInfo.mapel.toUpperCase()}`],
-                [`KELAS: ${reportInfo.kelas.toUpperCase()}`],
-                [null],
-                ["No", "Nama Siswa", "Total Skor", "Nilai Akhir", ...answerKey.map((_, i) => `Soal ${i + 1}`)],
-                ...studentData.map((s, i) => [i + 1, s.name, parseFloat(s.totalScore.toFixed(2)), parseFloat(s.score.toFixed(2)), ...s.answers]),
-                [null],
-                ["KUNCI JAWABAN", null, null, null, ...answerKey]
+            const numStudents = studentData.length;
+            const numQuestions = answerKey.length;
+            const questionNumbers = answerKey.map((_, i) => i + 1);
+            const ws_data_analisis = [
+                ["ANALISIS KUANTITATIF BUTIR SOAL"], [],
+                ["MATA PELAJARAN", ":", reportInfo.mapel.toUpperCase()],
+                ["KELAS/PROGRAM", ":", reportInfo.kelas.toUpperCase()],
+                ["JUMLAH PESERTA", ":", numStudents],
+                ["JUMLAH SOAL PG", ":", numQuestions], [],
+                ["KUNCI JAWABAN", null, ...answerKey],
+                ["No", "NAMA PESERTA DIDIK", ...questionNumbers, "SKOR PG", "SKOR PGK", "JML SKOR", "NILAI"],
+                ...studentData.map((s, i) => [i + 1, s.name, ...s.answers, s.totalScorePG, s.totalScorePGK, s.totalScore, parseFloat(s.score.toFixed(2))])
             ];
-            const ws_summary = XLSX.utils.aoa_to_sheet(ws_data_summary);
-            ws_summary['!merges'] = [ { s: { r: 0, c: 0 }, e: { r: 0, c: answerKey.length + 3 } } ];
-            XLSX.utils.book_append_sheet(wb, ws_summary, "Hasil Koreksi");
+            const ws_analisis = XLSX.utils.aoa_to_sheet(ws_data_analisis);
+            const totalCols = 2 + numQuestions + 4;
+            ws_analisis['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: totalCols } }];
+            if (ws_data_analisis[7].length < totalCols) { while(ws_data_analisis[7].length < totalCols) ws_data_analisis[7].push(null); }
+            XLSX.utils.book_append_sheet(wb, ws_analisis, "ANALISIS KUANTITATIF");
             
             const scoreHeaders = answerKey.map((_, i) => `Skor Soal ${i + 1}`);
-            const ws_data_scores = [
-                ["No", "Nama Siswa", ...scoreHeaders, "Total Skor"],
-                ...studentData.map((s, i) => [i + 1, s.name, ...s.scoresPerQuestion, parseFloat(s.totalScore.toFixed(2))])
-            ];
+            const ws_data_scores = [["No", "Nama Siswa", ...scoreHeaders, "Total Skor"], ...studentData.map((s, i) => [i + 1, s.name, ...s.scoresPerQuestion, s.totalScore])];
             const ws_scores = XLSX.utils.aoa_to_sheet(ws_data_scores);
             XLSX.utils.book_append_sheet(wb, ws_scores, "Skor Per Soal");
 
             XLSX.writeFile(wb, `Hasil_Koreksi_${reportInfo.mapel}_${reportInfo.kelas}.xlsx`);
         }
         
-        function resetApp() {
-            clearProgress();
-            window.location.reload();
-        }
+        function resetApp() { clearProgress(); window.location.reload(); }
 
-        // --- Progress Saving & Loading (localStorage) ---
+        // --- Progress Saving & Loading ---
         function saveProgress() {
             const keyInputs = document.querySelectorAll('#answer-key-grid .key-input');
             const studentAnswerTable = document.getElementById('input-table');
             let studentAnswers = [];
-
             if (studentAnswerTable && studentAnswerTable.rows.length > 1) {
                 for (let i = 1; i < studentAnswerTable.rows.length; i++) {
                     const row = studentAnswerTable.rows[i];
                     const answersInRow = [];
-                    for (let j = 2; j < row.cells.length; j++) {
-                        answersInRow.push(row.cells[j].querySelector('input').value);
-                    }
+                    for (let j = 2; j < row.cells.length; j++) answersInRow.push(row.cells[j].querySelector('input').value);
                     studentAnswers.push(answersInRow);
                 }
             }
-            
-            const progress = {
-                mapel: document.getElementById('mapel').value,
-                kelas: document.getElementById('kelas').value,
-                studentNames: document.getElementById('student-names').value,
-                numQuestions: document.getElementById('num-questions').value,
-                simpleScore: document.getElementById('simple-score').value,
-                complexScore: document.getElementById('complex-score').value,
-                complexQuestions: document.getElementById('complex-questions').value,
-                answerKey: Array.from(keyInputs).map(input => input.value),
-                studentAnswers: studentAnswers
-            };
+            const progress = { mapel: document.getElementById('mapel').value, kelas: document.getElementById('kelas').value, studentNames: document.getElementById('student-names').value, numQuestions: document.getElementById('num-questions').value, simpleScore: document.getElementById('simple-score').value, complexScore: document.getElementById('complex-score').value, complexQuestions: document.getElementById('complex-questions').value, answerKey: Array.from(keyInputs).map(input => input.value), studentAnswers: studentAnswers };
             localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
         }
 
         function loadProgress() {
             const savedData = localStorage.getItem(STORAGE_KEY);
-            if (savedData) {
-                document.getElementById('session-notification').classList.remove('hidden');
-            }
+            if (savedData) document.getElementById('session-notification').classList.remove('hidden');
         }
 
         function resumeSession() {
             const savedData = localStorage.getItem(STORAGE_KEY);
             if (!savedData) return;
-
             const progress = JSON.parse(savedData);
             
             document.getElementById('mapel').value = progress.mapel || '';
@@ -481,79 +363,56 @@
             document.getElementById('simple-score').value = progress.simpleScore || '';
             document.getElementById('complex-score').value = progress.complexScore || '';
             document.getElementById('complex-questions').value = progress.complexQuestions || '';
-
             updateStudentCount();
             generateAnswerKeyInputs();
-
             const keyInputs = document.querySelectorAll('#answer-key-grid .key-input');
             if (progress.answerKey && progress.answerKey.length === keyInputs.length) {
-                keyInputs.forEach((input, index) => {
-                    input.value = progress.answerKey[index];
-                });
+                keyInputs.forEach((input, index) => { input.value = progress.answerKey[index]; });
             }
-
-            if(setupTable(progress.studentAnswers)) {
-                 document.getElementById('session-notification').classList.add('hidden');
-            }
+            if(setupTable(progress.studentAnswers)) document.getElementById('session-notification').classList.add('hidden');
         }
 
         function clearProgress(hideNotification = false) {
             localStorage.removeItem(STORAGE_KEY);
-            if(hideNotification) {
-                 document.getElementById('session-notification').classList.add('hidden');
-            }
+            if(hideNotification) document.getElementById('session-notification').classList.add('hidden');
             showModal('success', 'Progres Dihapus', 'Data sesi sebelumnya telah berhasil dihapus.');
         }
-
 
         // --- Keyboard Navigation ---
         function handleKeyNavigation(event) {
             const target = event.target;
             if (target.tagName !== 'INPUT' || !target.classList.contains('key-input')) return;
-
             const key = event.key;
             if (!['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(key)) return; 
-
             event.preventDefault();
-
             const allKeys = Array.from(document.querySelectorAll('#answer-key-grid .key-input'));
             const currentIndex = allKeys.indexOf(target);
             const grid = document.getElementById('answer-key-grid');
             const numColumns = window.getComputedStyle(grid).gridTemplateColumns.split(' ').length;
-
             let nextIndex = -1;
             if (key === 'ArrowLeft') nextIndex = currentIndex - 1;
             else if (key === 'ArrowRight') nextIndex = currentIndex + 1;
             else if (key === 'ArrowUp') nextIndex = currentIndex - numColumns;
             else if (key === 'ArrowDown') nextIndex = currentIndex + numColumns;
-
             if (nextIndex >= 0 && nextIndex < allKeys.length) allKeys[nextIndex].focus();
         }
         
         function handleStudentAnswerNavigation(event) {
             const target = event.target;
             if (target.tagName !== 'INPUT') return;
-            
             const key = event.key;
             if (!['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(key)) return;
-
             event.preventDefault();
-
             const table = document.getElementById('input-table');
             const allInputs = Array.from(table.querySelectorAll('tbody input'));
             const currentIndex = allInputs.indexOf(target);
             const numCols = (answerKey.length) + 1;
-
             let nextIndex = -1;
             if (key === 'ArrowLeft') nextIndex = currentIndex - 1;
             else if (key === 'ArrowRight') nextIndex = currentIndex + 1;
             else if (key === 'ArrowUp') nextIndex = currentIndex - numCols;
             else if (key === 'ArrowDown') nextIndex = currentIndex + numCols;
-            
-            if (nextIndex >= 0 && nextIndex < allInputs.length) {
-                allInputs[nextIndex].focus();
-                allInputs[nextIndex].select();
-            }
+            if (nextIndex >= 0 && nextIndex < allInputs.length) { allInputs[nextIndex].focus(); allInputs[nextIndex].select(); }
         }
         
         // --- Event Listeners ---
